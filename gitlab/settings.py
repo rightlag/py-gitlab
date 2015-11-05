@@ -1,9 +1,8 @@
 import os
 
 
-class Config(object):
-    def __init__(self):
-        self.env_prefix = 'GITLAB_'
+class BaseConfig(object):
+    env_prefix = 'GITLAB_'
 
     @property
     def default_host(self):
@@ -15,6 +14,10 @@ class Config(object):
             return os.environ[self.env_prefix + key]
         except KeyError:
             return None
+
+
+class DevelopmentConfig(BaseConfig):
+    pass
 
 
 def get_ldap_username(user):

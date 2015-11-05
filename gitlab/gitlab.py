@@ -3,7 +3,7 @@ import requests
 
 from decorators import namespace
 from exceptions import GitLabServerError
-from settings import Config
+from settings import BaseConfig
 
 
 class GitLab(object):
@@ -11,14 +11,13 @@ class GitLab(object):
     ResponseError = GitLabServerError
 
     def __init__(self, host=None, username=None, password=None):
-        config = Config()
+        config = BaseConfig()
         self.host = config.default_host if not host else host
         if not (username or password):
             # Username and/or password not assigned
             # try environment variables
             username = config.get('username')
             password = config.get('password')
-        # Authenticate the user via HTTP basic authentication
         self.authenticate(username, password)
 
     @property
@@ -134,6 +133,82 @@ class GitLab(object):
         path = '/projects/{id}/repository/branches/{branch}'.format(
             id=id, branch=branch
         )
+        data = self._request('GET', path)
+        return data
+
+    def get_commits(self, id=None, **kwargs):
+        """Get a list of repository commits in a project."""
+        path = '/projects/{id}/repository/commits'.format(id=id)
+        data = self._request('GET', path)
+        return data
+
+    def get_commit(self, id=None, sha=None):
+        """Get a specific commit identified by the commit hash or name of a
+        branch or tag."""
+        path = '/projects/{id}/repository/commits/{sha}'.format(id=id, sha=sha)
+        data = self._request('GET', path)
+        return data
+
+    def get_commit_diff(self, id=None, sha=None):
+        """Get the diff of a commit in a project."""
+        path = '/projects/{id}/repository/commits/{sha}/diff'.format(
+            id=id, sha=sha
+        )
+        data = self._request('GET', path)
+        return data
+
+    def get_commit_comments(self, id=None, sha=None):
+        """Get the comments of a commit in a project."""
+        path = '/projects/{id}/repository/commits/{sha}/comments'.format(
+            id=id, sha=sha
+        )
+        data = self._request('GET', path)
+        return data
+
+    def get_merge_requests(self, id=None, **kwargs):
+        """Get all merge requests for this project."""
+        path = '/projects/{id}/merge_requests'.format(id=id)
+        data = self._request('GET', path, **kwargs)
+        return data
+
+    def get_merge_request(self, id=None, merge_request_id=None):
+        """Shows information about a single merge request."""
+        path = '/projects/{id}/merge_request/{merge_request_id}'.format(
+            id=id, merge_request_id=merge_request_id
+        )
+        data = self._request('GET', path)
+        return data
+
+    def get_merge_request_changes(self, id=None, merge_request_id=None):
+        """Shows information about the merge request including its files and
+        changes."""
+        path = ('/projects/{id}/merge_request/{merge_request_id}/changes'
+                ).format(id=id, merge_request_id=merge_request_id)
+        data = self._request('GET', path)
+        return data
+
+    def get_merge_request_comments(self, id=None, merge_request_id=None):
+        """Gets all the comments associated with a merge request."""
+        path = ('/projects/{id}/merge_request/{merge_request_id}/comments'
+                ).format(id=id, merge_request_id=merge_request_id)
+        data = self._request('GET', path)
+        return data
+
+    def get_issues(self, **kwargs):
+        """Get all issues created by authenticated user."""
+        path = '/issues'
+        data = self._request('GET', path, **kwargs)
+        return data
+
+    def get_project_issues(self, id=None, **kwargs):
+        """Get a list of project issues."""
+        path = '/projects/{id}/issues'.format(id=id)
+        data = self._request('GET', path, **kwargs)
+        return data
+
+    def get_project_issue(self, id=None, issue_id=None):
+        """Gets a single project issue."""
+        path = '/projects/{id}/issues/{issue_id}'
         data = self._request('GET', path)
         return data
 
