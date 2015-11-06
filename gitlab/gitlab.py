@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
+import httplib
 import requests
+import settings
 
 from decorators import namespace
 from exceptions import GitLabServerError
-from settings import BaseConfig
 
 
 class GitLab(object):
@@ -11,13 +12,9 @@ class GitLab(object):
     ResponseError = GitLabServerError
 
     def __init__(self, host=None, username=None, password=None):
-        config = BaseConfig()
-        self.host = config.default_host if not host else host
-        if not (username or password):
-            # Username and/or password not assigned
-            # try environment variables
-            username = config.get('username')
-            password = config.get('password')
+        self.host = host
+        username = username or settings.GITLAB_USERNAME
+        password = password or settings.GITLAB_PASSWORD
         self.authenticate(username, password)
 
     @property
@@ -30,7 +27,7 @@ class GitLab(object):
         return base_url
 
     def authenticate(self, username, password):
-        """Authenticate user via HTTP Basic Authentication."""
+        """Resource owner password credentials workflow."""
         auth_url = self._base_url.rsplit('/', 2)[0]
         path = '/oauth/token'
         data = {
@@ -219,13 +216,11 @@ class GitLab(object):
         if res.status_code not in [200, 201]:
             raise self.ResponseError(res.status_code, res.reason)
         if res.headers['Content-Type'] != 'application/json':
-            # Redirects cached
-            if res.history:
-                # The response always returns 200 OK even if it contains
-                # redirects
-                # If the response `history` attribute is `True` assume
-                # 404 Not Found
-                raise self.ResponseError(404, 'Not Found')
+            # The response always returns 200 OK even if it contains redirects
+            # If the response `history` attribute is `True` assume
+            # 400 Bad Request
+            raise self.ResponseError(httplib.BAD_REQUEST,
+                                     httplib.responses[httplib.BAD_REQUEST])
         try:
             return res.json()
         except ValueError, e:
