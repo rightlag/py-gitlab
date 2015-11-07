@@ -4,12 +4,12 @@ from datetime import datetime
 from gitlab import GitLab
 from gitlab.decorators import namespace
 from gitlab.exceptions import GitLabServerError
-from gitlab.settings import ConfigParser, get_ldap_username
+from gitlab.settings import ConfigParser
 
 
 class GitLabTestCase(unittest.TestCase):
     def setUp(self):
-        self.gitlab = GitLab(host='gitlab.cisco.com')
+        self.gitlab = GitLab(host='gitlab.com')
         self.config = ConfigParser()
         self.config.read('~/.gitlab')
 
@@ -21,7 +21,7 @@ class GitLabTestCase(unittest.TestCase):
         with self.assertRaises(GitLabServerError) as e:
             username = 'foo'
             password = 'bar'
-            GitLab(host='gitlab.cisco.com', username=username,
+            GitLab(host='gitlab.com', username=username,
                    password=password)
         exception = e.exception
         self.assertEqual(exception.status_code, 401)
@@ -41,8 +41,7 @@ class GitLabTestCase(unittest.TestCase):
         authenticated via ldap
         """
         user = self.gitlab.get_current_user()
-        ldap_username = get_ldap_username(user)
-        self.assertEqual(self.config.get('username'), ldap_username)
+        self.assertEqual(self.config.get('username'), user['username'])
 
     def test_get_users_endpoint_with_query_params(self):
         """

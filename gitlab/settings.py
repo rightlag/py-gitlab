@@ -25,11 +25,3 @@ config.read('~/.gitlab')
 
 GITLAB_USERNAME = config.get('username')
 GITLAB_PASSWORD = config.get('password')
-
-
-def get_ldap_username(user):
-    """Return the Active Directory username from the GitLab account."""
-    try:
-        return user['identities'][0]['extern_uid'].split(',')[0][3:]
-    except IndexError:
-        return None
