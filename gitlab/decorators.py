@@ -11,6 +11,9 @@ def namespace(fn):
     @wraps(fn)
     def wrapper(*args, **kwargs):
         if 'id' in kwargs:
-            kwargs['id'] = urllib.urlencode(id)
+            # Remove the `id=` portion of the string generated via the
+            # `urlencode` method
+            id = urllib.urlencode({'id': kwargs['id']})[3:]
+            kwargs['id'] = id
         return fn(*args, **kwargs)
     return wrapper
