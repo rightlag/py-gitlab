@@ -9,39 +9,29 @@ from gitlab.settings import ConfigParser
 
 class GitLabTestCase(unittest.TestCase):
     def setUp(self):
-        self.gitlab = GitLab(host='gitlab.com')
         self.config = ConfigParser()
         self.config.read('~/.gitlab')
+        self.gitlab = GitLab(host='gitlab.com')
 
-    def test_authentication_error_is_raised_with_invalid_credentials(self):
+    def test_authentication_error_is_raised_with_invalid_private_token(self):
         """
         Assert that a `401 Unauthorized` exception is raised provided the user
         enters invalid credentials
         """
         with self.assertRaises(GitLabServerError) as e:
-            username = 'foo'
-            password = 'bar'
-            GitLab(host='gitlab.com', username=username,
-                   password=password)
+            gitlab = GitLab(host='gitlab.com', private_token='foo')
+            gitlab.get_current_user()
         exception = e.exception
         self.assertEqual(exception.status_code, 401)
         self.assertEqual(exception.reason, 'Unauthorized')
 
-    def test_authorization_bearer_token_exists(self):
+    def test_private_token_http_header_exists(self):
         """
-        Assert that the `Authorization` header exists in the HTTP request
+        Assert that the `PRIVATE-TOKEN` header exists in the HTTP request
         header and that it is not `None`
         """
-        self.assertTrue('Authorization' in self.gitlab._session.headers)
-        self.assertIsNotNone(self.gitlab._session.headers['Authorization'])
-
-    def test_get_current_user(self):
-        """
-        Assert that the `get_current_user` method returns the appropriate user
-        authenticated via ldap
-        """
-        user = self.gitlab.get_current_user()
-        self.assertEqual(self.config.get('username'), user['username'])
+        self.assertTrue('PRIVATE-TOKEN' in self.gitlab._session.headers)
+        self.assertIsNotNone(self.gitlab._session.headers['PRIVATE-TOKEN'])
 
     def test_get_users_endpoint_with_query_params(self):
         """

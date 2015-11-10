@@ -23,5 +23,4 @@ class ConfigParser(object):
 config = ConfigParser()
 config.read('~/.gitlab')
 
-GITLAB_USERNAME = config.get('username')
-GITLAB_PASSWORD = config.get('password')
+PRIVATE_TOKEN = config.get('private_token')

@@ -11,11 +11,10 @@ class GitLab(object):
     Version = 'v3'
     ResponseError = GitLabServerError
 
-    def __init__(self, host=None, username=None, password=None):
+    def __init__(self, host=None, private_token=None):
         self.host = host
-        username = username or settings.GITLAB_USERNAME
-        password = password or settings.GITLAB_PASSWORD
-        self.authenticate(username, password)
+        private_token = private_token or settings.PRIVATE_TOKEN
+        self._set_headers(private_token)
 
     @property
     def _base_url(self):
@@ -26,27 +25,12 @@ class GitLab(object):
         )
         return base_url
 
-    def authenticate(self, username, password):
-        """Resource owner password credentials workflow."""
-        auth_url = self._base_url.rsplit('/', 2)[0]
-        path = '/oauth/token'
-        data = {
-            'grant_type': 'password',
-            'username': username,
-            'password': password,
-        }
-        res = requests.post(auth_url + path, data=data)
-        if res.status_code != 200:
-            # Authentication failed
-            # raise `GitLabServerError`
-            raise self.ResponseError(res.status_code, res.reason)
-        # Create a `Session` object to persist certain parameters across
-        # requests
+    def _set_headers(self, private_token):
         self._session = requests.Session()
         # Set HTTP `Authorization` request header for the `Session` object
         self._session.headers.update({
-            'Authorization': '{res[token_type]} {res[access_token]}'.format(
-                res=res.json()
+            'PRIVATE-TOKEN': '{private_token}'.format(
+                private_token=private_token
             )
         })
 

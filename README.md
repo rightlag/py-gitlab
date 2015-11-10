@@ -12,18 +12,17 @@ py-gitlab is a Python package that provides an interface to the [GitLab RESTful 
 
 # Getting started with py-gitlab
 
-Your credentials can be passed when instantiating the GitLab class. Alternatively, py-gitlab will check for the existence of a configuration file named `~/.gitlab`. The configuration file is JSON formatted:
+Your `private_token` can be passed when instantiating the GitLab class. Alternatively, py-gitlab will check for the existence of a configuration file named `~/.gitlab`. The configuration file is JSON formatted:
 
     {
-        "username": <Your GitLab username>,
-        "password": <Your GitLab password>
+        "private_token": <YOUR GITLAB PRIVATE TOKEN>
     }
 
 # Sample endpoint request
 
 ### Get the current user
 
-**Note:** `username` and `password` are loaded from `~/.gitlab` configuration file
+**Note:** `private_token` is loaded from the `~/.gitlab` configuration file
 
     from gitlab import GitLab
 
