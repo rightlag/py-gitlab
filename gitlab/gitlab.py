@@ -26,6 +26,7 @@ class GitLab(object):
         return base_url
 
     def _set_headers(self, private_token):
+        """Set `PRIVATE_TOKEN` HTTP request header for restricted endpoints."""
         self._session = requests.Session()
         # Set HTTP `Authorization` request header for the `Session` object
         self._session.headers.update({
