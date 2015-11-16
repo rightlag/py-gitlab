@@ -11,7 +11,7 @@ class GitLab(object):
     Version = 'v3'
     ResponseError = GitLabServerError
 
-    def __init__(self, host=None, private_token=None):
+    def __init__(self, host=None, private_token=None, use_ssl=True):
         self.host = host
         private_token = private_token or settings.PRIVATE_TOKEN
         self._set_headers(private_token)
@@ -19,7 +19,7 @@ class GitLab(object):
     @property
     def _base_url(self):
         """Set the GitLab API base URL."""
-        protocol = 'https'
+        protocol = 'https' if self.use_ssl else 'http'
         base_url = '{protocol}://{host}/api/{version}'.format(
             protocol=protocol, host=self.host, version=self.Version
         )
