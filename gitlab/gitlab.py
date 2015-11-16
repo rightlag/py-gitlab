@@ -13,6 +13,7 @@ class GitLab(object):
 
     def __init__(self, host=None, private_token=None, use_ssl=True):
         self.host = host
+        self.use_ssl = use_ssl
         private_token = private_token or settings.PRIVATE_TOKEN
         self._set_headers(private_token)
 
