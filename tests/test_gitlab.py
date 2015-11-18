@@ -19,7 +19,7 @@ class GitLabTestCase(unittest.TestCase):
         enters invalid credentials
         """
         with self.assertRaises(GitLabServerError) as e:
-            gitlab = GitLab(host='gitlab.com', private_token='foo')
+            gitlab = GitLab(host='gitlab.com', private_token='foobar')
             gitlab.get_current_user()
         exception = e.exception
         self.assertEqual(exception.status_code, 401)
@@ -39,6 +39,17 @@ class GitLabTestCase(unittest.TestCase):
         """
         users = self.gitlab.get_users(per_page=1)
         self.assertEqual(len(users), 1)
+
+    def test_get_user_endpoint_with_invalid_id(self):
+        """
+        Assert that `400 Bad Request` is raised when retrieving a user with
+        invalid ID
+        """
+        with self.assertRaises(GitLabServerError) as e:
+            self.gitlab.get_user(id=-1)
+        exception = e.exception
+        self.assertEqual(exception.status_code, 400)
+        self.assertEqual(exception.reason, 'Bad Request')
 
     def test_get_projects_endpoint_with_query_params(self):
         """
