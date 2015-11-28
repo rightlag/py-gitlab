@@ -11,7 +11,7 @@ def namespace(fn):
     @wraps(fn)
     def wrapper(*args, **kwargs):
         if 'id' in kwargs:
-            if r'%2F' in kwargs['id']:
+            if '%2F' in kwargs['id']:
                 # ID is already URL encoded, do not pass through `urlencode`
                 # method
                 return fn(*args, **kwargs)
