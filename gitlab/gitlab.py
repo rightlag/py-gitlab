@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import http.client as httplib
+import http.client as httplib # Httplib was changed to http.client in python3
 import requests
 import os
 from decouple import config
