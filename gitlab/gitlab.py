@@ -213,10 +213,11 @@ class GitLab(object):
                                      httplib.responses[httplib.BAD_REQUEST])
         try:
             return res.json()
-        except:
+            msg = "JSON object can't be deserialized"
+        except ValueError as e:
             # JSON object can't be deserialized
             # raise exception
-            pass
+            print("ValueError Exception!", msg)
 
     def __str__(self):
         return '{}:{}'.format(self.__class__.__name__, self.host)
