@@ -1,5 +1,5 @@
+#!/usr/bin/python
 import urllib
-
 from functools import wraps
 
 

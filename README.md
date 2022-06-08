@@ -4,6 +4,8 @@ py-gitlab 0.1.0
 
 Released: 3-Nov-2015
 
+Updated by @promenadeviki: 8-June-2022
+
 ---
 
 # Introduction
@@ -11,18 +13,17 @@ Released: 3-Nov-2015
 py-gitlab is a Python package that provides an interface to the [GitLab RESTful web API](https://github.com/gitlabhq/gitlabhq/tree/master/doc/api).
 
 # Getting started with py-gitlab
+This app uses the python-decouple library to search for a .env file. This is where you put your GitLab Auth Token.  The format is as follows -
 
-Your `private_token` can be passed when instantiating the GitLab class. Alternatively, py-gitlab will check for the existence of a configuration file named `~/.gitlab`. The configuration file is JSON formatted:
-
-    {
-        "private_token": <YOUR GITLAB PRIVATE TOKEN>
-    }
+```
+TOKEN=glpat-123456
+```
 
 # Sample endpoint request
 
 ### Get the current user
 
-**Note:** `private_token` is loaded from the `~/.gitlab` configuration file
+**Note:** `private_token` is loaded from the `.env` configuration file
 
     from gitlab import GitLab
 

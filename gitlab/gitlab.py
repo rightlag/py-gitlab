@@ -1,20 +1,24 @@
 # -*- coding: utf-8 -*-
-import httplib
+import http.client as httplib
 import requests
-import settings
-
+import os
+from decouple import config
 from decorators import namespace
 from exceptions import GitLabServerError
 
 
 class GitLab(object):
-    Version = 'v3'
+    # Use v4 gitlab api version. Others are deprecated in Python
+    Version = 'v4'
     ResponseError = GitLabServerError
 
     def __init__(self, host=None, private_token=None, use_ssl=True):
+        '''
+        Uses decouple to parse .env file and also sets gitlab.com host
+        '''
         self.host = host
         self.use_ssl = use_ssl
-        private_token = private_token or settings.PRIVATE_TOKEN
+        private_token = config('TOKEN')
         self._set_headers(private_token)
 
     @property
@@ -209,10 +213,10 @@ class GitLab(object):
                                      httplib.responses[httplib.BAD_REQUEST])
         try:
             return res.json()
-        except ValueError, e:
+        except:
             # JSON object can't be deserialized
             # raise exception
-            raise e
+            pass
 
     def __str__(self):
         return '{}:{}'.format(self.__class__.__name__, self.host)
